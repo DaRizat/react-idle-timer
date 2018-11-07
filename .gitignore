@@ -13,7 +13,7 @@ yarn-error.log*
 # Application
 #
 docs/
-dist/
+# dist/
 build/
 stats.html
 coverage
