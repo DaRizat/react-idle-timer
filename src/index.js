@@ -297,7 +297,7 @@ export default class IdleTimer extends Component {
    * @private
    */
   _handleEvent = (e) => {
-    const { timeout, warningTimeout, onWarning } = this.props
+    const { timeout, warningTimeout, onWarning, warn } = this.props
     const { remaining, pageX, pageY } = this.state
     // Already idle, ignore events
     if (remaining) return
@@ -352,7 +352,7 @@ export default class IdleTimer extends Component {
    * @name reset
    */
   _reset () {
-    const { timeout, warningTimeout, onWarning } = this.props
+    const { timeout, warningTimeout, onWarning, warn } = this.props
     // Clear timeout
     clearTimeout(this.tId)
 

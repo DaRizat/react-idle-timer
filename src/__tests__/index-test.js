@@ -32,7 +32,10 @@ describe('IdleTimer', () => {
       onActive: undefined,
       startOnMount: undefined,
       capture: undefined,
-      passive: undefined
+      passive: undefined,
+      warn: undefined,
+      warnTimeout: undefined,
+      onWarning: undefined,
     }
     mounted = undefined
     children = undefined
