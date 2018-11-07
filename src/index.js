@@ -65,6 +65,18 @@ export default class IdleTimer extends Component {
      */
     timeout: PropTypes.number,
     /**
+     * Warn user before timeout occurs
+     * default: false
+     * @type {Boolean}
+     */
+    warn: PropTypes.bool,
+    /**
+     * Warning Timeout in milliseconds
+     * default: 1140000
+     * @type {Number}
+     */
+    warningTimeout: PropTypes.number,
+    /**
      * DOM events to listen to
      * default: see [default events](https://github.com/SupremeTechnopriest/react-idle-timer#default-events)
      * @type {Array}
@@ -82,6 +94,12 @@ export default class IdleTimer extends Component {
      * @type {Function}
      */
     onActive: PropTypes.func,
+    /**
+     * Function to call when warning user of imminent timeout
+     * default: () => {}
+     * @type {Function}
+     */
+    onWarning: PropTypes.func,
     /**
      * Element reference to bind activity listeners to
      * default: document
@@ -115,13 +133,16 @@ export default class IdleTimer extends Component {
    */
   static defaultProps = {
     timeout: 1000 * 60 * 20,
+    warningTimeout: 1000 * 60 * 19,
     element: DEFAULT_ELEMENT,
     events: DEFAULT_EVENTS,
     onIdle: () => {},
     onActive: () => {},
+    onWarning: () => {},
     startOnMount: true,
     capture: true,
-    passive: true
+    passive: true,
+    warn: false,
   }
 
   /**
@@ -144,6 +165,13 @@ export default class IdleTimer extends Component {
    * @private
    */
   tId = null
+
+  /**
+   * The warning timer instance
+   * @type {Timeout}
+   * @private
+   */
+  wId = null
 
   /**
    * Creates an instance of IdleTimer
@@ -213,13 +241,16 @@ export default class IdleTimer extends Component {
    * @private
    */
   componentWillUnmount () {
+    const { element, events, passive, capture, warn } = this.props
     // Clear timeout to prevent delayed state changes
     clearTimeout(this.tId)
+    if (warn) {
+      clearTimeout(this.wId)
+    }
     // If we are not in a browser
     // we dont need to unbind events
     if (!IS_BROWSER) return
     // Unbind all events
-    const { element, events, passive, capture } = this.props
     events.forEach(e => {
       element.removeEventListener(e, this._handleEvent, {
         capture,
@@ -266,6 +297,7 @@ export default class IdleTimer extends Component {
    * @private
    */
   _handleEvent = (e) => {
+    const { timeout, warningTimeout, onWarning } = this.props
     const { remaining, pageX, pageY } = this.state
     // Already idle, ignore events
     if (remaining) return
@@ -307,9 +339,12 @@ export default class IdleTimer extends Component {
       pageY: e.pageY
     })
 
-    // Set a new timeout
-    const { timeout } = this.props
+    // Set new timeouts
     this.tId = setTimeout(this._toggleIdleState.bind(this), timeout) // set a new timeout
+    if (warn) {
+      clearTimeout(this.wId)
+      this.wId = setTimeout(onWarning, warningTimeout) // set a new warning timeout
+    }
   }
 
   /**
@@ -317,6 +352,7 @@ export default class IdleTimer extends Component {
    * @name reset
    */
   _reset () {
+    const { timeout, warningTimeout, onWarning } = this.props
     // Clear timeout
     clearTimeout(this.tId)
 
@@ -329,8 +365,11 @@ export default class IdleTimer extends Component {
     })
 
     // Set new timeout
-    const { timeout } = this.props
     this.tId = setTimeout(this._toggleIdleState.bind(this), timeout)
+    if (warn) {
+      clearTimeout(this.wId)
+      this.wId = setTimeout(onWarning, warningTimeout)
+    }
   }
 
   /**
@@ -339,6 +378,7 @@ export default class IdleTimer extends Component {
    */
   _pause () {
     // Timer is already paused
+    const { warn } = this.props
     const { remaining } = this.state
     if (remaining !== null) {
       return
@@ -347,6 +387,12 @@ export default class IdleTimer extends Component {
     // Clear existing timeout
     clearTimeout(this.tId)
     this.tId = null
+
+    if (warn) {
+      // Clear existing warning
+      clearTimeout(this.wId)
+      this.wId = null
+    }
 
     // Define how much is left on the timer
     this.setState({
@@ -361,6 +407,7 @@ export default class IdleTimer extends Component {
   _resume () {
     // Timer is not paused
     const { remaining, idle } = this.state
+    const { warn, timeout, warningTimeout, onWarning } = this.props;
     if (remaining === null) {
       return
     }
@@ -369,8 +416,13 @@ export default class IdleTimer extends Component {
     // if we are in the idle state
     if (!idle) {
       this.setState({ remaining: null })
-      // Set a new timeout
+      // Set new timeouts
       this.tId = setTimeout(this._toggleIdleState.bind(this), remaining)
+      if (warn) {
+        // Calculate how much time before warning based on original difference in timeouts
+        const remainingWarning = remaining - (timeout - warningTimeout);
+        this.wId = setTimeout(onWarning, remainingWarning)
+      }
     }
   }
 
