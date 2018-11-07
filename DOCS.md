@@ -19,6 +19,9 @@
 -   [getElapsedTime][15]
 -   [getLastActiveTime][16]
 -   [isIdle][17]
+-   [warn][18]
+-   [warningTimeout][19]
+-   [onWarning][20]
 
 ## props
 
@@ -30,56 +33,56 @@
 Activity Timeout in milliseconds
 default: 1200000
 
-Type: [Number][18]
+Type: [Number][21]
 
 ## events
 
 DOM events to listen to
-default: see [default events][19]
+default: see [default events][22]
 
-Type: [Array][20]
+Type: [Array][23]
 
 ## onIdle
 
 Function to call when user is idle
 default: () => {}
 
-Type: [Function][21]
+Type: [Function][24]
 
 ## onActive
 
 Function to call when user becomes active
 default: () => {}
 
-Type: [Function][21]
+Type: [Function][24]
 
 ## element
 
 Element reference to bind activity listeners to
 default: document
 
-Type: [Object][22]
+Type: [Object][25]
 
 ## startOnMount
 
 Start the timer on mount
 default: true
 
-Type: [Boolean][23]
+Type: [Boolean][26]
 
 ## passive
 
 Bind events passively
 default: true
 
-Type: [Boolean][23]
+Type: [Boolean][26]
 
 ## capture
 
 Capture events
 default: true
 
-Type: [Boolean][23]
+Type: [Boolean][26]
 
 ## methods
 
@@ -102,7 +105,7 @@ Resumes a paused timer
 
 Time remaining before idle
 
-Returns **[Number][18]** Milliseconds remaining
+Returns **[Number][21]** Milliseconds remaining
 
 ## getElapsedTime
 
@@ -120,7 +123,28 @@ Returns **Timestamp**
 
 Returns wether or not the user is idle
 
-Returns **[Boolean][23]** 
+Returns **[Boolean][26]** 
+
+## warn
+
+Warn user before timeout occurs
+default: false
+
+Type: [Boolean][26]
+
+## warningTimeout
+
+Warning Timeout in milliseconds
+default: 1140000
+
+Type: [Number][21]
+
+## onWarning
+
+Function to call when warning user of imminent timeout
+default: () => {}
+
+Type: [Function][24]
 
 [1]: #props
 
@@ -156,14 +180,20 @@ Returns **[Boolean][23]**
 
 [17]: #isidle
 
-[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[18]: #warn
 
-[19]: https://github.com/SupremeTechnopriest/react-idle-timer#default-events
+[19]: #warningtimeout
 
-[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[20]: #onwarning
 
-[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[22]: https://github.com/SupremeTechnopriest/react-idle-timer#default-events
 
-[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[24]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[25]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[26]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
